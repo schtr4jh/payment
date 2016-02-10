@@ -9,12 +9,14 @@ class Paymill extends AbstractHandler implements Handler
 
     protected $paymill;
 
-    public function fetchConfig()
+    public function initHandler()
     {
         $this->config = [
             'private_key' => config('payment.paymill.private_key'),
             'public_key'  => config('payment.paymill.public_key'),
         ];
+
+        $this->paymill = new Request($this->config['private_key']);
 
         return $this;
     }
@@ -27,15 +29,6 @@ class Paymill extends AbstractHandler implements Handler
     public function getPublicKey()
     {
         return $this->config['public_key'];
-    }
-
-    public function initHandler()
-    {
-        $this->fetchConfig();
-
-        $this->paymill = new Request($this->config['private_key']);
-
-        return $this;
     }
 
     public function start()
@@ -61,7 +54,7 @@ class Paymill extends AbstractHandler implements Handler
     protected function makeTransaction($paymentId)
     {
         $transaction = new Transaction();
-        $transaction->setAmount($this->order->getTotal())
+        $transaction->setAmount($this->getTotal())
             ->setCurrency($this->order->getCurrency())
             ->setPayment($paymentId)
             ->setDescription($this->order->getDescription());
@@ -87,4 +80,5 @@ class Paymill extends AbstractHandler implements Handler
             $this->order->setPaid();
         }
     }
+
 }

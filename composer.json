@@ -17,6 +17,6 @@
   },
   "suggest": {
     "paymill/paymill": "Allow Paymill payment method",
-    "paypal/sdk-core-php": "Allow Paypall payment method"
+    "paypal/rest-api-sdk-php": "Allow Paypall payment method"
   }
 }

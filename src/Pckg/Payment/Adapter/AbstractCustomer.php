@@ -10,4 +10,9 @@ abstract class AbstractCustomer implements Customer
         $this->customer = $customer;
     }
 
+    public function getFullName()
+    {
+        return $this->getLastName() . ' ' . $this->getFirstName();
+    }
+
 }

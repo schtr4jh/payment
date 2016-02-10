@@ -15,4 +15,6 @@ interface Product
 
     public function getTotal();
 
+    public function getSku();
+
 }

@@ -4,6 +4,7 @@ use Pckg\Payment\Adapter\Order;
 use Pckg\Payment\Handler\Handler;
 use Pckg\Payment\Handler\Paymill;
 use Pckg\Payment\Handler\Paypal;
+use Pckg\Payment\Handler\PaypalRest;
 use Pckg\Payment\Handler\Proforma;
 
 class Payment
@@ -59,6 +60,12 @@ class Payment
     public function usePaypalHandler()
     {
         $this->handler = new Paypal($this->order);
+        $this->handler->initHandler();
+    }
+
+    public function usePaypalRestHandler()
+    {
+        $this->handler = new PaypalRest($this->order);
         $this->handler->initHandler();
     }
 

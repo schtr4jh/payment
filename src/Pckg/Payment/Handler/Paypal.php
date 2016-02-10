@@ -7,7 +7,7 @@ class Paypal extends AbstractHandler implements Handler
     const CHECKOUTSTATUS_PAYMENT_ACTION_NOT_INITIATED = 'PaymentActionNotInitiated';
     const PAYMENTACTION = 'Sale';
 
-    public function fetchConfig()
+    public function initHandler()
     {
         $this->config = [
             'username'   => config('payment.paypal.username'),
@@ -22,20 +22,12 @@ class Paypal extends AbstractHandler implements Handler
         return $this;
     }
 
-    public function initHandler()
-    {
-        $this->fetchConfig();
-
-        return $this;
-    }
-
     public function start()
     {
         $fields = [
             'METHOD'       => 'SetExpressCheckout',
             'RETURNURL'    => url($this->config['url_return'], ['paypal', $this->order->getOrder()]),
             'CANCELURL'    => url($this->config['url_cancel'], ['paypal', $this->order->getOrder()]),
-            'CANCELURL'    => '',
             'NOSHIPPING'   => '1',
             'ALLOWNOTE'    => '0',
             'ADDROVERRIDE' => '0',
