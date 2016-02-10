@@ -14,5 +14,9 @@
     "psr-0": {
       "Pckg": "src\\"
     }
+  },
+  "suggest": {
+    "paymill/paymill": "Allow Paymill payment method",
+    "paypal/sdk-core-php": "Allow Paypall payment method"
   }
 }

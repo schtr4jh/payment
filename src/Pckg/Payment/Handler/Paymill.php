@@ -5,7 +5,12 @@ class Paymill extends AbstractHandler implements Handler
 
     public function fetchConfig()
     {
-        // TODO: Implement fetchConfig() method.
+        $this->config = [
+            'private_key' => config('payment.paymill.private_key'),
+            'public_key'  => config('payment.paymill.public_key'),
+        ];
+
+        return $this;
     }
 
 }

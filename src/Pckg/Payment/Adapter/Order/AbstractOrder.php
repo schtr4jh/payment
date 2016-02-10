@@ -12,4 +12,9 @@ abstract class AbstractOrder implements Order
         $this->order = $order;
     }
 
+    public function getCurrency()
+    {
+        return 'EUR';
+    }
+
 }

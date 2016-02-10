@@ -5,4 +5,8 @@ interface Handler
 
     public function fetchConfig();
 
+    public function isDev();
+
+    public function isProd();
+
 }

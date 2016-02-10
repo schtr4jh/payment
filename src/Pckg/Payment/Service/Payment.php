@@ -1,6 +1,7 @@
 <?php namespace Pckg\Payment\Service;
 
 use Pckg\Payment\Adapter\Order;
+use Pckg\Payment\Handler\Handler;
 
 class Payment
 {
@@ -16,17 +17,17 @@ class Payment
         return $this;
     }
 
-    public function setHandler($handler) {
-        if (is_string($handler)) {
-            $this->handler = new $handler;
+    public function setHandlerClass($handler)
+    {
+        $handler = new $handler;
+        $handler->fetchConfig();
 
-        } else if (is_object($handler)) {
-            $this->handler = $handler;
+        return $this->setHandler($handler);
+    }
 
-        } else {
-            throw new \Exception('Invalid payment handler');
-
-        }
+    public function setHandler(Handler $handler)
+    {
+        $this->handler = $handler;
 
         return $this;
     }
