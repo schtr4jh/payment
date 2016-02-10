@@ -12,7 +12,7 @@ trait Handlers
         $this->handler->initHandler();
     }
 
-    public function usePaypall()
+    public function usePaypal()
     {
         $this->handler = new Paypal($this->order);
         $this->handler->initHandler();

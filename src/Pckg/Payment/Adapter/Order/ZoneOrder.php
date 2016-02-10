@@ -61,4 +61,20 @@ class ZoneOrder extends AbstractOrder implements Order
         $this->order->save();
     }
 
+    public function getUrlSuccess($handler)
+    {
+        return env('DOMAIN') . url('payment.success', [
+            'handler' => $handler,
+            'listing' => $this->order,
+        ]);
+    }
+
+    public function getUrlError($handler)
+    {
+        return env('DOMAIN') . url('payment.error', [
+            'handler' => $handler,
+            'listing' => $this->order,
+        ]);
+    }
+
 }

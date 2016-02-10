@@ -1,38 +1,44 @@
 <?php namespace Pckg\Payment\Adapter\Product;
 
 use Pckg\Payment\Adapter\Product;
+use Zone\Listing\Package;
 
 class ZoneProduct extends AbstractProduct implements Product
 {
 
+    public function __construct(Package $package)
+    {
+        $this->product = $package;
+    }
+
     public function getId()
     {
-        // TODO: Implement getId() method.
+        return $this->product->id;
     }
 
     public function getName()
     {
-        // TODO: Implement getName() method.
+        return $this->product->title;
     }
 
     public function getPrice()
     {
-        // TODO: Implement getPrice() method.
+        return $this->product->price;
     }
 
     public function getQuantity()
     {
-        // TODO: Implement getQuantity() method.
+        return 1;
     }
 
     public function getVat()
     {
-        // TODO: Implement getVat() method.
+        return 0;
     }
 
     public function getTotal()
     {
-        // TODO: Implement getTotal() method.
+        return round($this->getQuantity() * $this->getPrice(), 2);
     }
 
 }

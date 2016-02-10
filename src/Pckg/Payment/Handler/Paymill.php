@@ -33,7 +33,7 @@ class Paymill extends AbstractHandler implements Handler
         return $this;
     }
 
-    public function postStart()
+    public function start()
     {
         $payment = new Payment();
         $payment->setToken(request('token'));
