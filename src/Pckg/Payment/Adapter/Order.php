@@ -23,4 +23,6 @@ interface Order
 
     public function setPaid();
 
+    public function getOrder();
+
 }

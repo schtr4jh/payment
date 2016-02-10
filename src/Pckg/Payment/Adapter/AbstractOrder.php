@@ -1,6 +1,4 @@
-<?php namespace Pckg\Payment\Adapter\Order;
-
-use Pckg\Payment\Adapter\Order;
+<?php namespace Pckg\Payment\Adapter;
 
 abstract class AbstractOrder implements Order
 {
@@ -10,6 +8,11 @@ abstract class AbstractOrder implements Order
     public function __construct($order)
     {
         $this->order = $order;
+    }
+
+    public function getOrder()
+    {
+        return $this->order;
     }
 
     public function getCurrency()

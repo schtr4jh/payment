@@ -1,6 +1,4 @@
-<?php namespace Pckg\Payment\Adapter\Customer;
-
-use Pckg\Payment\Adapter\Customer;
+<?php namespace Pckg\Payment\Adapter;
 
 abstract class AbstractCustomer implements Customer
 {

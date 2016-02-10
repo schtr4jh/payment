@@ -2,12 +2,12 @@
 
 use Pckg\Payment\Adapter\Order;
 use Pckg\Payment\Handler\Handler;
-use Pckg\Payment\Service\Snippet\Handlers;
+use Pckg\Payment\Handler\Paymill;
+use Pckg\Payment\Handler\Paypal;
+use Pckg\Payment\Handler\Proforma;
 
 class Payment
 {
-
-    use Handlers;
 
     protected $order;
 
@@ -48,6 +48,24 @@ class Payment
     public function getCurrency()
     {
         return $this->order->getCurrency();
+    }
+
+    public function usePaymillHandler()
+    {
+        $this->handler = new Paymill($this->order);
+        $this->handler->initHandler();
+    }
+
+    public function usePaypalHandler()
+    {
+        $this->handler = new Paypal($this->order);
+        $this->handler->initHandler();
+    }
+
+    public function useProformaHandler()
+    {
+        $this->handler = new Proforma($this->order);
+        $this->handler->initHandler();
     }
 
 }

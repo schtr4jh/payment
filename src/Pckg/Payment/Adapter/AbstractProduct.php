@@ -1,6 +1,4 @@
-<?php namespace Pckg\Payment\Adapter\Product;
-
-use Pckg\Payment\Adapter\Product;
+<?php namespace Pckg\Payment\Adapter;
 
 abstract class AbstractProduct implements Product
 {

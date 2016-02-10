@@ -10,11 +10,13 @@ class Paypal extends AbstractHandler implements Handler
     public function fetchConfig()
     {
         $this->config = [
-            'username'  => config('payment.paypall.username'),
-            'password'  => config('payment.paypall.password'),
-            'signature' => config('payment.paypall.signature'),
-            'url'       => config('payment.paypall.url'),
-            'url_token' => config('payment.paypall.url_token'),
+            'username'   => config('payment.paypal.username'),
+            'password'   => config('payment.paypal.password'),
+            'signature'  => config('payment.paypal.signature'),
+            'url'        => config('payment.paypal.url'),
+            'url_token'  => config('payment.paypal.url_token'),
+            'url_return' => config('payment.paypal.url_return'),
+            'url_cancel' => config('payment.paypal.url_cancel'),
         ];
 
         return $this;
@@ -31,8 +33,9 @@ class Paypal extends AbstractHandler implements Handler
     {
         $fields = [
             'METHOD'       => 'SetExpressCheckout',
-            'RETURNURL'    => $this->order->getUrlSuccess('paypal'),
-            'CANCELURL'    => $this->order->getUrlError('paypal'),
+            'RETURNURL'    => url($this->config['url_return'], ['paypal', $this->order->getOrder()]),
+            'CANCELURL'    => url($this->config['url_cancel'], ['paypal', $this->order->getOrder()]),
+            'CANCELURL'    => '',
             'NOSHIPPING'   => '1',
             'ALLOWNOTE'    => '0',
             'ADDROVERRIDE' => '0',
@@ -46,7 +49,6 @@ class Paypal extends AbstractHandler implements Handler
             $url = str_replace('[token]', $response['TOKEN'], $this->config['url_token']);
             redirect()->away($url)->send();
         }
-        dd($response);
 
         return $response;
     }

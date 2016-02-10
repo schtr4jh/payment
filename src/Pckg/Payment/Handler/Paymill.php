@@ -19,6 +19,11 @@ class Paymill extends AbstractHandler implements Handler
         return $this;
     }
 
+    public function getTotal()
+    {
+        return round($this->order->getTotal() * 100);
+    }
+
     public function getPublicKey()
     {
         return $this->config['public_key'];
@@ -82,5 +87,4 @@ class Paymill extends AbstractHandler implements Handler
             $this->order->setPaid();
         }
     }
-
 }

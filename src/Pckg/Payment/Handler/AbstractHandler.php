@@ -7,28 +7,16 @@ abstract class AbstractHandler implements Handler
 
     protected $config = [];
 
-    protected $dev = true;
-
-    protected $handler;
+    protected $order;
 
     public function __construct(Order $order)
     {
         $this->order = $order;
     }
 
-    public function isDev()
+    public function initHandler()
     {
-        return $this->dev;
-    }
-
-    public function isProd()
-    {
-        return !$this->dev;
-    }
-
-    public function getTotal()
-    {
-        return round($this->order->getTotal() * 100);
+        return $this;
     }
 
 }
