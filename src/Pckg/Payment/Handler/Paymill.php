@@ -13,4 +13,7 @@ class Paymill extends AbstractHandler implements Handler
         return $this;
     }
 
+    public function initHandler() {
+    }
+
 }

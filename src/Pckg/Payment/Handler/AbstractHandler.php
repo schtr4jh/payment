@@ -7,6 +7,8 @@ abstract class AbstractHandler implements Handler
 
     protected $dev = true;
 
+    protected $handler;
+
     public function isDev()
     {
         return $this->dev;
