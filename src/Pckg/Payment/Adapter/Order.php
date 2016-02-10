@@ -13,4 +13,8 @@ interface Order
 
     public function getDate();
 
+    public function getCurrency();
+
+    public function getDescription();
+
 }

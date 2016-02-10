@@ -3,4 +3,6 @@
 interface Handler
 {
 
+    public function fetchConfig();
+
 }

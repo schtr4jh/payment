@@ -30,4 +30,14 @@ class ZoneOrder extends AbstractOrder implements Order
     {
         // TODO: Implement getDate() method.
     }
+
+    public function getCurrency()
+    {
+        // TODO: Implement getCurrency() method.
+    }
+
+    public function getDescription()
+    {
+        // TODO: Implement getDescription() method.
+    }
 }
