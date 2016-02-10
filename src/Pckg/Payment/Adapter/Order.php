@@ -17,4 +17,10 @@ interface Order
 
     public function getDescription();
 
+    public function getProducts();
+
+    public function getCustomer();
+
+    public function setPaid();
+
 }

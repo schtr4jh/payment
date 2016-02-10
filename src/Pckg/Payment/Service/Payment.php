@@ -2,9 +2,12 @@
 
 use Pckg\Payment\Adapter\Order;
 use Pckg\Payment\Handler\Handler;
+use Pckg\Payment\Service\Snippet\Handlers;
 
 class Payment
 {
+
+    use Handlers;
 
     protected $order;
 
@@ -19,8 +22,8 @@ class Payment
 
     public function setHandlerClass($handler)
     {
-        $handler = new $handler;
-        $handler->fetchConfig();
+        $handler = new $handler($this->order);
+        $handler->initHandler();
 
         return $this->setHandler($handler);
     }
@@ -30,6 +33,21 @@ class Payment
         $this->handler = $handler;
 
         return $this;
+    }
+
+    public function getHandler()
+    {
+        return $this->handler;
+    }
+
+    public function getTotal()
+    {
+        return $this->handler->getTotal();
+    }
+
+    public function getCurrency()
+    {
+        return $this->order->getCurrency();
     }
 
 }

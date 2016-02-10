@@ -8,12 +8,14 @@ trait Handlers
 
     public function usePaymill()
     {
-        $this->handler = new Paymill();
+        $this->handler = new Paymill($this->order);
+        $this->handler->initHandler();
     }
 
     public function usePaypall()
     {
-        $this->handler = new Paypal();
+        $this->handler = new Paypal($this->order);
+        $this->handler->initHandler();
     }
 
 }

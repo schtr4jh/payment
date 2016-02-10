@@ -1,5 +1,6 @@
 <?php namespace Pckg\Payment\Adapter\Product;
 
+use Pckg\Payment\Adapter\Customer\ZoneCustomer;
 use Pckg\Payment\Adapter\Order;
 use Pckg\Payment\Adapter\Order\AbstractOrder;
 use Zone\Listing\Listing;
@@ -41,4 +42,23 @@ class ZoneOrder extends AbstractOrder implements Order
     {
         return 'Listing #' . $this->getId();
     }
+
+    public function getCustomer()
+    {
+        return new ZoneCustomer($this->order->user);
+    }
+
+    public function getProducts()
+    {
+        return [
+            new ZoneProduct($this->order->package),
+        ];
+    }
+
+    public function setPaid()
+    {
+        $this->order->is_paid = true;
+        $this->order->save();
+    }
+
 }
