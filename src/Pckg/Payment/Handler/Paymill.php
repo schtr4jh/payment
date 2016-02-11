@@ -39,9 +39,12 @@ class Paymill extends AbstractHandler implements Handler
 
         $response = null;
         try {
+            $this->log($payment);
             $response = $this->paymill->create($payment);
+            $this->log($response);
 
         } catch (\Exception $e) {
+            $this->log($e);
             throw $e;
 
         } finally {
@@ -61,8 +64,11 @@ class Paymill extends AbstractHandler implements Handler
 
         $response = null;
         try {
+            $this->log($transaction);
             $response = $this->paymill->create($transaction);
+            $this->log($response);
         } catch (\Exception $e) {
+            $this->log($e);
             throw $e;
 
         } finally {

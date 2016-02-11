@@ -106,9 +106,12 @@ class PaypalRest extends AbstractHandler implements Handler
             ->setTransactions([$transaction]);
 
         try {
+            $this->log($payment);
             $payment->create($this->paypal);
+            $this->log($payment);
         } catch (\Exception $e) {
-            dd($e);
+            $this->log($e);
+            throw $e;
         } finally {
             redirect()->away($payment->getApprovalLink())->send();
         }
@@ -152,10 +155,12 @@ class PaypalRest extends AbstractHandler implements Handler
         $execution->addTransaction($transaction);
 
         try {
-            $result = $payment->execute($execution, $this->paypal);
+            $payment->execute($execution, $this->paypal);
         } catch (\Exception $e) {
+            $this->log($e);
+            throw $e;
         } finally {
-            $payment = Payment::get($paymentId, $this->paypal);
+            Payment::get($paymentId, $this->paypal);
         }
     }
 

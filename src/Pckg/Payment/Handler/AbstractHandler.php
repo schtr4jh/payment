@@ -1,5 +1,6 @@
 <?php namespace Pckg\Payment\Handler;
 
+use Pckg\Payment\Adapter\Log;
 use Pckg\Payment\Adapter\Order;
 
 abstract class AbstractHandler implements Handler
@@ -8,6 +9,8 @@ abstract class AbstractHandler implements Handler
     protected $config = [];
 
     protected $order;
+
+    protected $log;
 
     public function __construct(Order $order)
     {
@@ -19,9 +22,16 @@ abstract class AbstractHandler implements Handler
         return $this;
     }
 
+    public function setLogger(Log $log)
+    {
+        $this->log = $log;
+
+        return $this;
+    }
+
     public function log($data)
     {
-
+        $this->log->log($data);
     }
 
 }
