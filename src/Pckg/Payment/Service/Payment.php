@@ -55,24 +55,42 @@ class Payment
     {
         $this->handler = new Paymill($this->order);
         $this->handler->initHandler();
+
+        return $this;
     }
 
     public function usePaypalHandler()
     {
         $this->handler = new Paypal($this->order);
         $this->handler->initHandler();
+
+        return $this;
     }
 
     public function usePaypalRestHandler()
     {
         $this->handler = new PaypalRest($this->order);
         $this->handler->initHandler();
+
+        return $this;
     }
 
     public function useProformaHandler()
     {
         $this->handler = new Proforma($this->order);
         $this->handler->initHandler();
+
+        return $this;
+    }
+
+    public function getUrl($action, $handler)
+    {
+        return url('payment.' . $action, [$handler, $this->order->getOrder()]);
+    }
+
+    public function has($handler)
+    {
+        return config('payment.' . $handler . '.enabled');
     }
 
 }

@@ -19,4 +19,9 @@ abstract class AbstractHandler implements Handler
         return $this;
     }
 
+    public function log($data)
+    {
+
+    }
+
 }

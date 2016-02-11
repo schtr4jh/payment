@@ -29,10 +29,9 @@ class PaypalRest extends AbstractHandler implements Handler
             'mode'        => config('payment.paypalRest.mode'),
             'log_enabled' => config('payment.paypalRest.log.enabled'),
             'log_level'   => config('payment.paypalRest.log.level'),
-            'url_return'  => config('payment.paypal.url_return'),
-            'url_cancel'  => config('payment.paypal.url_cancel'),
+            'url_return'  => config('payment.paypalRest.url_return'),
+            'url_cancel'  => config('payment.paypalRest.url_cancel'),
         ];
-
 
         $this->paypal = new ApiContext(
             new OAuthTokenCredential(
@@ -45,11 +44,8 @@ class PaypalRest extends AbstractHandler implements Handler
             array(
                 'mode'           => $this->config['mode'],
                 'log.LogEnabled' => $this->config['log_enabled'],
-                'log.FileName'   => '../PayPal.log',
                 'log.LogLevel'   => $this->config['log_level'],
                 'cache.enabled'  => true,
-                // 'http.CURLOPT_CONNECTTIMEOUT' => 30
-                // 'http.headers.PayPal-Partner-Attribution-Id' => '123123123'
             )
         );
 
@@ -151,12 +147,13 @@ class PaypalRest extends AbstractHandler implements Handler
             ->setTotal($total)
             ->setDetails($details);
 
+        $transaction->setAmount($amount);
+
         $execution->addTransaction($transaction);
 
         try {
             $result = $payment->execute($execution, $this->paypal);
         } catch (\Exception $e) {
-
         } finally {
             $payment = Payment::get($paymentId, $this->paypal);
         }
