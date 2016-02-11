@@ -46,7 +46,7 @@ class Paymill extends AbstractHandler implements Handler
 
         } finally {
             if ($paymentId = $response->getId()) {
-                $this->makeTransaction($paymentId);
+                return $this->makeTransaction($paymentId);
             }
         }
     }
@@ -62,13 +62,13 @@ class Paymill extends AbstractHandler implements Handler
         $response = null;
         try {
             $response = $this->paymill->create($transaction);
-
         } catch (\Exception $e) {
             throw $e;
 
         } finally {
             if ($response->getStatus() == 'closed') {
                 $this->order->setPaid();
+                return true;
             }
 
         }
