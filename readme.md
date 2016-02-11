@@ -58,35 +58,33 @@ $service->setOrder(new ProjectOrder($order));
 ## Routes
 ```php
 // show payment options
-'payment'         => route('PaymentController@payment', 'payment/{listing}', 'GET'),
+'payment'         => route('PaymentController@payment', 'payment/{order}', 'GET'),
 
 // validate paymill request
 'payment.paymill' => route('PaymentController@paymill', 'payment/paymill/validate', 'POST'),
 
 // start handler (post for paymill, get for paypal) - calls start() on handler
-'payment.start'   => route('PaymentController@start', 'payment/{handler}/{listing}/start', 'POST|GET'),
+'payment.start'   => route('PaymentController@start', 'payment/{handler}/{order}/start', 'POST|GET'),
 
 // success handler - calls success() on handler
-'payment.success' => route('PaymentController@success', 'payment/{handler}/{listing}/success', 'GET'),
+'payment.success' => route('PaymentController@success', 'payment/{handler}/{order}/success', 'GET'),
 
 // error handler - calls error() on handler
-'payment.error'   => route('PaymentController@error', 'payment/{handler}/{listing}/error', 'GET'),
+'payment.error'   => route('PaymentController@error', 'payment/{handler}/{order}/error', 'GET'),
 
 // waiting for payment page (proforma)
-'payment.waiting' => route('PaymentController@waiting', 'payment/{handler}/{listing}/waiting', 'GET'),
+'payment.waiting' => route('PaymentController@waiting', 'payment/{handler}/{order}/waiting', 'GET'),
 ```
 ## Controller
 ```php
-<?php namespace Net\Http;
+<?php 
 
-use Net\Http\Payment\ZoneLog;
-use Net\Http\Payment\ZoneOrder;
 use Pckg\Payment\Request\Paymill;
 use Pckg\Payment\Service\Payment;
-use Zone\Listing\Listing;
-use Zone\Listing\PaymentMethod;
+use Project\Order\Order;
+use Project\Order\PaymentMethod;
 
-class PaymentController extends BaseController
+class PaymentController
 {
 
     protected $paymentService;
@@ -96,30 +94,27 @@ class PaymentController extends BaseController
         $this->paymentService = new Payment();
     }
 
-    protected function preparePaymentService($handler, Listing $listing)
+    protected function preparePaymentService($handler, Order $order)
     {
-        $listing->abortIfNotMine();
-
-        $this->paymentService->setOrder(new ZoneOrder($listing));
+        $this->paymentService->setOrder(new ProjectOrder($order));
         $this->paymentService->{'use' . ucfirst($handler) . 'Handler'}();
-        $this->paymentService->getHandler()->setLogger(new ZoneLog($listing));
+        $this->paymentService->getHandler()->setLogger(new ProjectLog($order));
     }
 
-    public function getPayment(Listing $listing)
+    public function getPayment(Order $order)
     {
-        $listing->abortIfNotMine();
-        $this->paymentService->setOrder(new ZoneOrder($listing));
+        $this->paymentService->setOrder(new ProjectOrder($order));
 
         return view('payment.index', [
-            'listing'        => $listing,
+            'order'          => $order,
             'paymentMethods' => PaymentMethod::where('enabled', 1)->get(),
             'paymentService' => $this->paymentService,
         ]);
     }
 
-    public function postStart($handler, Listing $listing)
+    public function postStart($handler, Order $order)
     {
-        $this->preparePaymentService($handler, $listing);
+        $this->preparePaymentService($handler, $order);
         $success = $this->paymentService->getHandler()->start();
 
         return [
@@ -130,33 +125,33 @@ class PaymentController extends BaseController
         ];
     }
 
-    public function getStart($handler, Listing $listing)
+    public function getStart($handler, Order $order)
     {
-        return $this->getStatus($handler, $listing, 'start');
+        return $this->getStatus($handler, $order, 'start');
     }
 
-    public function getSuccess($handler, Listing $listing)
+    public function getSuccess($handler, Order $order)
     {
-        return $this->getStatus($handler, $listing, 'success');
+        return $this->getStatus($handler, $order, 'success');
     }
 
-    public function getError($handler, Listing $listing)
+    public function getError($handler, Order $order)
     {
-        return $this->getStatus($handler, $listing, 'error');
+        return $this->getStatus($handler, $order, 'error');
     }
 
-    public function getWaiting($handler, Listing $listing)
+    public function getWaiting($handler, Order $order)
     {
-        return $this->getStatus($handler, $listing, 'waiting');
+        return $this->getStatus($handler, $order, 'waiting');
     }
 
-    protected function getStatus($handler, Listing $listing, $action)
+    protected function getStatus($handler, Order $order, $action)
     {
-        $this->preparePaymentService($handler, $listing);
+        $this->preparePaymentService($handler, $order);
         $this->paymentService->getHandler()->{$action}();
 
         return view('payment.' . $action, [
-            'listing' => $listing,
+            'order' => $order,
         ]);
     }
 
