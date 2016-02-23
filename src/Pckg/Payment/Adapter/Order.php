@@ -7,6 +7,8 @@ interface Order
 
     public function getTotal();
 
+    public function getTotalToPay();
+
     public function getVat();
 
     public function getDelivery();

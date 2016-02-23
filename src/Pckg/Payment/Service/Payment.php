@@ -41,9 +41,24 @@ class Payment
         return $this->handler;
     }
 
+    public function getTotalWithCurrency()
+    {
+        return number_format($this->getTotal(), 2) . ' ' . $this->getCurrency();
+    }
+
+    public function getTotalToPayWithCurrency()
+    {
+        return number_format($this->getTotalToPay(), 2) . ' ' . $this->getCurrency();
+    }
+
     public function getTotal()
     {
-        return $this->handler->getTotal();
+        return $this->order->getTotal();
+    }
+
+    public function getTotalToPay()
+    {
+        return $this->order->getTotalToPay();
     }
 
     public function getCurrency()
