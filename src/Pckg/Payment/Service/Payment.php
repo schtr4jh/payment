@@ -3,6 +3,8 @@
 use Pckg\Payment\Adapter\Order;
 use Pckg\Payment\Handler\Handler;
 use Pckg\Payment\Handler\Paymill;
+use Pckg\Payment\Handler\Paymill\Sepa as PaymillSepa;
+use Pckg\Payment\Handler\Paymill\Paypal as PaymillPaypal;
 use Pckg\Payment\Handler\Paypal;
 use Pckg\Payment\Handler\PaypalRest;
 use Pckg\Payment\Handler\Proforma;
@@ -69,6 +71,22 @@ class Payment
     public function usePaymillHandler()
     {
         $this->handler = new Paymill($this->order);
+        $this->handler->initHandler();
+
+        return $this;
+    }
+
+    public function usePaymillSepaHandler()
+    {
+        $this->handler = new PaymillSepa($this->order);
+        $this->handler->initHandler();
+
+        return $this;
+    }
+
+    public function usePaymillPaypalHandler()
+    {
+        $this->handler = new PaymillPaypal($this->order);
         $this->handler->initHandler();
 
         return $this;
