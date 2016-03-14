@@ -59,4 +59,14 @@ class Paypal extends Paymill
         }
     }
 
+    public function getValidateUrl()
+    {
+        return url('payment.validate', ['paymill-paypal', $this->order->getOrder()]);
+    }
+
+    public function getStartUrl()
+    {
+        return url('payment.start', ['paymill-paypal', $this->order->getOrder()]);
+    }
+
 }

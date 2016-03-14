@@ -115,4 +115,14 @@ class Paymill extends AbstractHandler implements Handler
         }
     }
 
+    public function getValidateUrl()
+    {
+        return url('payment.validate', ['paymill', $this->order->getOrder()]);
+    }
+
+    public function getStartUrl()
+    {
+        return url('payment.start', ['paymill', $this->order->getOrder()]);
+    }
+
 }

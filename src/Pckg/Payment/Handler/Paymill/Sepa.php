@@ -25,4 +25,14 @@ class Sepa extends Paymill
         ];
     }
 
+    public function getValidateUrl()
+    {
+        return url('payment.validate', ['paymill-sepa', $this->order->getOrder()]);
+    }
+
+    public function getStartUrl()
+    {
+        return url('payment.start', ['paymill-sepa', $this->order->getOrder()]);
+    }
+
 }
