@@ -1,5 +1,8 @@
 <?php namespace Pckg\Payment\Handler;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request as HttpRequest;
+use Illuminate\Support\Facades\Validator;
 use Paymill\Models\Request\Payment;
 use Paymill\Models\Request\Transaction;
 use Paymill\Request;
@@ -8,6 +11,26 @@ class Paymill extends AbstractHandler implements Handler
 {
 
     protected $paymill;
+
+    public function validate(HttpRequest $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'holder'     => 'required',
+            'number'     => 'required',
+            'exp_month'  => 'required',
+            'exp_year'   => 'required',
+            'cvc'        => 'required',
+            'amount_int' => 'required',
+        ]);
+
+        if (!$validator->passes()) {
+            return new JsonResponse($validator->getMessageBag()->toArray(), 422);
+        }
+
+        return [
+            'success' => true,
+        ];
+    }
 
     public function initHandler()
     {

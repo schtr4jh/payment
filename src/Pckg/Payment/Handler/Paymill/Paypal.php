@@ -1,11 +1,20 @@
 <?php namespace Pckg\Payment\Handler\Paymill;
 
+use Illuminate\Http\Request as HttpRequest;
 use Paymill\Models\Request\Checksum;
 use Paymill\Models\Request\Transaction;
 use Pckg\Payment\Handler\Paymill;
 
 class Paypal extends Paymill
 {
+
+    public function validate(HttpRequest $request)
+    {
+        return [
+            'success'  => true,
+            'checksum' => $this->getChecksum(),
+        ];
+    }
 
     public function getChecksum()
     {
