@@ -1,5 +1,6 @@
 <?php namespace Pckg\Payment\Service;
 
+use Pckg\Payment\Adapter\Log;
 use Pckg\Payment\Adapter\Order;
 use Pckg\Payment\Handler\Handler;
 use Pckg\Payment\Handler\Paymill;
@@ -65,6 +66,13 @@ class Payment
     public function has($handler)
     {
         return config('payment.' . $handler . '.enabled');
+    }
+
+    public function prepare(Order $order, $handler, Log $logger)
+    {
+        $this->setOrder($order);
+        $this->{'use' . ucfirst(camel_case($handler)) . 'Handler'}();
+        $this->getHandler()->setLogger($logger);
     }
 
 }

@@ -1,7 +1,7 @@
 # About project
 Project provides abstract implementation for payment providers:
- - paypal (classic API + REST API)
- - paymill
+ - paypal (classic API, REST API)
+ - paymill (credit cards, sepa payment, paypal)
  - proforma
  
 # Instalation
