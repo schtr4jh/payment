@@ -139,6 +139,8 @@
         $this.collectData = function () {
             return {
                 accountholder: $this.find('#paymill-card-holder').val(),
+                iban: $this.find('#paymill-card-iban').val(),
+                bic: $this.find('#paymill-card-bic').val()
             };
         };
 
