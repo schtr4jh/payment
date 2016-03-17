@@ -1,8 +1,6 @@
 <?php namespace Pckg\Payment\Handler;
 
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request as HttpRequest;
-use Illuminate\Support\Facades\Validator;
+use Exception;
 use Paymill\Models\Request\Payment;
 use Paymill\Models\Request\Transaction;
 use Paymill\Request;
@@ -12,19 +10,19 @@ class Paymill extends AbstractHandler implements Handler
 
     protected $paymill;
 
-    public function validate(HttpRequest $request)
+    public function validate($request)
     {
-        $validator = Validator::make($request->all(), [
+        $rules = [
             'holder'     => 'required',
             'number'     => 'required',
             'exp_month'  => 'required',
             'exp_year'   => 'required',
             'cvc'        => 'required',
             'amount_int' => 'required',
-        ]);
+        ];
 
-        if (!$validator->passes()) {
-            return new JsonResponse($validator->getMessageBag()->toArray(), 422);
+        if (!$this->environment->validates($request, $rules)) {
+            return $this->environment->errorJsonResponse();
         }
 
         return [
@@ -35,8 +33,8 @@ class Paymill extends AbstractHandler implements Handler
     public function initHandler()
     {
         $this->config = [
-            'private_key' => config('payment.paymill.private_key'),
-            'public_key'  => config('payment.paymill.public_key'),
+            'private_key' => $this->environment->config('paymill.private_key'),
+            'public_key'  => $this->environment->config('paymill.public_key'),
         ];
 
         $this->paymill = new Request($this->config['private_key']);
@@ -62,7 +60,7 @@ class Paymill extends AbstractHandler implements Handler
     public function start()
     {
         $payment = new Payment();
-        $payment->setToken(request('token'));
+        $payment->setToken($this->environment->request('token'));
         $payment->setClient($this->order->getCustomer());
 
         $response = null;
@@ -71,7 +69,7 @@ class Paymill extends AbstractHandler implements Handler
             $response = $this->paymill->create($payment);
             $this->log($response);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->log($e);
             throw $e;
 
@@ -95,7 +93,7 @@ class Paymill extends AbstractHandler implements Handler
             $this->log($transaction);
             $response = $this->paymill->create($transaction);
             $this->log($response);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->log($e);
             throw $e;
 
@@ -117,12 +115,12 @@ class Paymill extends AbstractHandler implements Handler
 
     public function getValidateUrl()
     {
-        return url('payment.validate', ['paymill', $this->order->getOrder()]);
+        return $this->environment->url('payment.validate', ['paymill', $this->order->getOrder()]);
     }
 
     public function getStartUrl()
     {
-        return url('payment.start', ['paymill', $this->order->getOrder()]);
+        return $this->environment->url('payment.start', ['paymill', $this->order->getOrder()]);
     }
 
 }

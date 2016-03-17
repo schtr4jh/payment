@@ -1,5 +1,6 @@
 <?php namespace Pckg\Payment\Handler;
 
+use Pckg\Payment\Adapter\Environment;
 use Pckg\Payment\Adapter\Log;
 use Pckg\Payment\Adapter\Order;
 
@@ -11,6 +12,11 @@ abstract class AbstractHandler implements Handler
     protected $order;
 
     protected $log;
+
+    /**
+     * @var Environment
+     */
+    protected $environment;
 
     public function __construct(Order $order)
     {
@@ -25,6 +31,13 @@ abstract class AbstractHandler implements Handler
     public function setLogger(Log $log)
     {
         $this->log = $log;
+
+        return $this;
+    }
+
+    public function setEnvironment(Environment $environment)
+    {
+        $this->environment = $environment;
 
         return $this;
     }

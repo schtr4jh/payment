@@ -1,5 +1,6 @@
 <?php namespace Pckg\Payment\Service;
 
+use Pckg\Payment\Handler\Handler;
 use Pckg\Payment\Handler\Paymill;
 use Pckg\Payment\Handler\Paypal;
 use Pckg\Payment\Handler\PaypalRest;
@@ -7,6 +8,20 @@ use Pckg\Payment\Handler\Proforma;
 
 trait Handlers
 {
+
+    protected $handler;
+
+    public function setHandler(Handler $handler)
+    {
+        $this->handler = $handler;
+
+        return $this;
+    }
+
+    public function getHandler()
+    {
+        return $this->handler;
+    }
 
     public function usePaymillHandler()
     {

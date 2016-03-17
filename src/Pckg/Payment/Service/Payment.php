@@ -1,8 +1,8 @@
 <?php namespace Pckg\Payment\Service;
 
+use Pckg\Payment\Adapter\Environment;
 use Pckg\Payment\Adapter\Log;
 use Pckg\Payment\Adapter\Order;
-use Pckg\Payment\Handler\Handler;
 use Pckg\Payment\Handler\Paymill;
 
 class Payment
@@ -12,7 +12,7 @@ class Payment
 
     protected $order;
 
-    protected $handler;
+    protected $environment;
 
     public function setOrder(Order $order)
     {
@@ -21,16 +21,11 @@ class Payment
         return $this;
     }
 
-    public function setHandler(Handler $handler)
+    public function setEnvironment(Environment $environment)
     {
-        $this->handler = $handler;
+        $this->environment = $environment;
 
         return $this;
-    }
-
-    public function getHandler()
-    {
-        return $this->handler;
     }
 
     public function getTotalWithCurrency()
@@ -60,19 +55,19 @@ class Payment
 
     public function getUrl($action, $handler)
     {
-        return url('payment.' . $action, [$handler, $this->order->getOrder()]);
+        return $this->environment->url('payment.' . $action, [$handler, $this->order->getOrder()]);
     }
 
     public function has($handler)
     {
-        return config('payment.' . $handler . '.enabled');
+        return $this->environment->config($handler . '.enabled');
     }
 
     public function prepare(Order $order, $handler, Log $logger)
     {
         $this->setOrder($order);
         $this->{'use' . ucfirst(camel_case($handler)) . 'Handler'}();
-        $this->getHandler()->setLogger($logger);
+        $this->getHandler()->setLogger($logger)->setEnvironment($this->environment);
     }
 
 }

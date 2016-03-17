@@ -1,6 +1,5 @@
 <?php namespace Pckg\Payment\Handler\Paymill;
 
-use Illuminate\Http\Request as HttpRequest;
 use Paymill\Models\Request\Checksum;
 use Paymill\Models\Request\Transaction;
 use Pckg\Payment\Handler\Paymill;
@@ -8,7 +7,7 @@ use Pckg\Payment\Handler\Paymill;
 class Paypal extends Paymill
 {
 
-    public function validate(HttpRequest $request)
+    public function validate($request)
     {
         return [
             'success'  => true,
@@ -33,7 +32,7 @@ class Paypal extends Paymill
 
     private function getReturnUrl()
     {
-        return full_url(config('payment.paymill-paypal.url_return'), [
+        return $this->environment->fullUrl($this->environment->config('paymill-paypal.url_return'), [
             'handler' => 'paymill-paypal',
             'listing' => $this->order->getOrder(),
         ]);
@@ -41,7 +40,7 @@ class Paypal extends Paymill
 
     private function getCancelUrl()
     {
-        return full_url(config('payment.paymill-paypal.url_cancel'), [
+        return $this->environment->fullUrl($this->environment->config('paymill-paypal.url_cancel'), [
             'handler' => 'paymill-paypal',
             'listing' => $this->order->getOrder(),
         ]);
@@ -50,7 +49,7 @@ class Paypal extends Paymill
     public function success()
     {
         $transaction = new Transaction();
-        $transaction->setId(request('paymill_trx_id'));
+        $transaction->setId($this->environment->request('paymill_trx_id'));
 
         $response = $this->paymill->getOne($transaction);
 
@@ -61,12 +60,12 @@ class Paypal extends Paymill
 
     public function getValidateUrl()
     {
-        return url('payment.validate', ['paymill-paypal', $this->order->getOrder()]);
+        return $this->environment->url('payment.validate', ['paymill-paypal', $this->order->getOrder()]);
     }
 
     public function getStartUrl()
     {
-        return url('payment.start', ['paymill-paypal', $this->order->getOrder()]);
+        return $this->environment->url('payment.start', ['paymill-paypal', $this->order->getOrder()]);
     }
 
 }

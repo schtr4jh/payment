@@ -1,5 +1,7 @@
 <?php namespace Pckg\Payment\Handler;
 
+use Exception;
+
 class Paypal extends AbstractHandler implements Handler
 {
 
@@ -10,13 +12,13 @@ class Paypal extends AbstractHandler implements Handler
     public function initHandler()
     {
         $this->config = [
-            'username'   => config('payment.paypal.username'),
-            'password'   => config('payment.paypal.password'),
-            'signature'  => config('payment.paypal.signature'),
-            'url'        => config('payment.paypal.url'),
-            'url_token'  => config('payment.paypal.url_token'),
-            'url_return' => config('payment.paypal.url_return'),
-            'url_cancel' => config('payment.paypal.url_cancel'),
+            'username'   => $this->environment->config('paypal.username'),
+            'password'   => $this->environment->config('paypal.password'),
+            'signature'  => $this->environment->config('paypal.signature'),
+            'url'        => $this->environment->config('paypal.url'),
+            'url_token'  => $this->environment->config('paypal.url_token'),
+            'url_return' => $this->environment->config('paypal.url_return'),
+            'url_cancel' => $this->environment->config('paypal.url_cancel'),
         ];
 
         return $this;
@@ -26,8 +28,10 @@ class Paypal extends AbstractHandler implements Handler
     {
         $fields = [
             'METHOD'       => 'SetExpressCheckout',
-            'RETURNURL'    => url($this->config['url_return'], ['paypal', $this->order->getOrder()]),
-            'CANCELURL'    => url($this->config['url_cancel'], ['paypal', $this->order->getOrder()]),
+            'RETURNURL'    => $this->environment->url($this->config['url_return'],
+                ['paypal', $this->order->getOrder()]),
+            'CANCELURL'    => $this->environment->url($this->config['url_cancel'],
+                ['paypal', $this->order->getOrder()]),
             'NOSHIPPING'   => '1',
             'ALLOWNOTE'    => '0',
             'ADDROVERRIDE' => '0',
@@ -39,7 +43,7 @@ class Paypal extends AbstractHandler implements Handler
 
         if ($response['ACK'] == static::ACK_SUCCESS) {
             $url = str_replace('[token]', $response['TOKEN'], $this->config['url_token']);
-            redirect()->away($url)->send();
+            $this->environment->redirect($url);
         }
 
         return $response;
@@ -72,7 +76,7 @@ class Paypal extends AbstractHandler implements Handler
         curl_close($ch);
 
         if (!$response) {
-            throw new \Exception("Request has failed! ($error)");
+            throw new Exception("Request has failed! ($error)");
         }
 
         $responseArray = explode('&', $response);
@@ -154,7 +158,7 @@ class Paypal extends AbstractHandler implements Handler
 
     public function success()
     {
-        $token = request('token');
+        $token = $this->environment->request('token');
         $fields = [
             'METHOD' => 'GetExpressCheckoutDetails',
             'TOKEN'  => $token,
