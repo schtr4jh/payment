@@ -28,7 +28,7 @@ class Laravel implements Environment
 
     public function config($key)
     {
-        return config('payment' . $key);
+        return config('payment.' . $key);
     }
 
     public function request($key)

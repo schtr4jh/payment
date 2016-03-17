@@ -23,52 +23,43 @@ trait Handlers
         return $this->handler;
     }
 
-    public function usePaymillHandler()
+    public function fullInitHandler(Handler $handler)
     {
-        $this->handler = new Paymill($this->order);
+        $this->handler = $handler;
+        $this->handler->setEnvironment($this->environment);
         $this->handler->initHandler();
 
         return $this;
+    }
+
+    public function usePaymillHandler()
+    {
+        return $this->fullInitHandler(new Paymill($this->order));
     }
 
     public function usePaymillSepaHandler()
     {
-        $this->handler = new Paymill\Sepa($this->order);
-        $this->handler->initHandler();
-
-        return $this;
+        return $this->fullInitHandler(new Paymill\Sepa($this->order));
     }
 
     public function usePaymillPaypalHandler()
     {
-        $this->handler = new Paymill\Paypal($this->order);
-        $this->handler->initHandler();
-
-        return $this;
+        return $this->fullInitHandler(new Paymill\Paypal($this->order));
     }
 
     public function usePaypalHandler()
     {
-        $this->handler = new Paypal($this->order);
-        $this->handler->initHandler();
-
-        return $this;
+        return $this->fullInitHandler(new Paypal($this->order));
     }
 
     public function usePaypalRestHandler()
     {
-        $this->handler = new PaypalRest($this->order);
-        $this->handler->initHandler();
-
-        return $this;
+        return $this->fullInitHandler(new PaypalRest($this->order));
     }
 
     public function useProformaHandler()
     {
-        $this->handler = new Proforma($this->order);
-        $this->handler->initHandler();
-
-        return $this;
+        return $this->fullInitHandler(new Proforma($this->order));
     }
 
 }
