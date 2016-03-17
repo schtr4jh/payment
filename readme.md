@@ -1,12 +1,15 @@
 # About project
 Project provides abstract implementation for payment providers:
  - paypal (classic API, REST API)
- - paymill (credit cards, sepa payment, paypal)
- - braintree (waiting for implementation)
- - paywiser (waiting for implementation)
- - activa (waiting for implementation)
- - megapos (waiting for implementation)
+ - paymill (credit cards, sepa, paypal)
  - proforma
+ 
+Currently waiting for implementation:
+ - braintree
+ - paywiser
+ - activa
+ - megapos
+ - moneta
  
 # Instalation
 You can install package via composer.
