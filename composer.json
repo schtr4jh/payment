@@ -1,6 +1,7 @@
 {
   "name": "schtr4jh/payment",
   "description": "Basic implementation of payment libraries",
+  "keywords": ["php", "payment", "paypal", "paymill", "sepa", "proforma"],
   "homepage": "https://github.com/schtr4jh/payment",
   "license": "MIT",
   "authors": [
