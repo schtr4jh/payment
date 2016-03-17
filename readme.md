@@ -2,6 +2,10 @@
 Project provides abstract implementation for payment providers:
  - paypal (classic API, REST API)
  - paymill (credit cards, sepa payment, paypal)
+ - braintree (waiting for implementation)
+ - paywiser (waiting for implementation)
+ - activa (waiting for implementation)
+ - megapos (waiting for implementation)
  - proforma
  
 # Instalation
@@ -9,112 +13,139 @@ You can install package via composer.
 ```sh
 $ composer require schtr4jh/payment
 ```
-## Paypal classic API
-### Config
-```php
-        'enabled'    => true,
-        'username'   => 'schtr4jh-facilitator_api1.schtr4jh.net',
-        'password'   => '1390585136',
-        'signature'  => 'AOZR6pqlRlwo0Ex9.oQbP2uvOalsAHQdlhdfczB0.B699lqJXv8pigFj',
-        'url'        => 'https://api-3t.sandbox.paypal.com/nvp',
-        'url_token'  => 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=[token]',
-        'url_return' => 'payment.success',
-        'url_cancel' => 'payment.error',
-```
-## Paypal REST API
-### Config
-```php
-        'enabled'    => false,
-        'id'         => 'AYlzupNqmg7177ZI57MfI26mgkzN-n8QQewuicaHmi7OOEf5LNy5FIi7ooFIbwo-t9_LQR9NOqtLslF_',
-        'secret'     => 'ECQLZ6zyH8b6JgG3hGN8Qg1u6ezDiT0HpfCK7MnKcQyyQoYtghnAndYJLu5p1g0UJmLMj7_IV1Qdbsv3',
-        'mode'       => 'sandbox',
-        'url_return' => 'payment.success',
-        'url_cancel' => 'payment.error',
-        'log'        => [
-            'enabled' => true,
-            'level'   => 'DEBUG', // 'FINE' for production
-        ]
-```
 ## Paymill
-### Config
+### Credit cards
 ```php
-        'enabled'     => true,
-        'private_key' => '6813f7bc057744e5b56bbbb5493cbc86',
-        'public_key'  => '50014699537b68adbd545e784ebf514d',
+'enabled'     => true,
+'private_key' => env('PAYMILL_PRIVATE_KEY'),
+'public_key'  => env('PAYMILL_PUBLIC_KEY'),
+```
+### Paypal
+```php
+'enabled'     => true,
+'private_key' => env('PAYMILL_PRIVATE_KEY'),
+'public_key'  => env('PAYMILL_PUBLIC_KEY'),
+'url_return'  => 'payment.success',
+'url_cancel'  => 'payment.error',
+```
+### Sepa
+```php
+'enabled'     => true,
+'private_key' => env('PAYMILL_PRIVATE_KEY'),
+'public_key'  => env('PAYMILL_PUBLIC_KEY'),
+```
+## Paypal
+### Classic API
+```php
+'enabled'    => true,
+'username'   => 'schtr4jh-facilitator_api1.schtr4jh.net',
+'password'   => '1390585136',
+'signature'  => 'AOZR6pqlRlwo0Ex9.oQbP2uvOalsAHQdlhdfczB0.B699lqJXv8pigFj',
+'url'        => 'https://api-3t.sandbox.paypal.com/nvp',
+'url_token'  => 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=[token]',
+'url_return' => 'payment.success',
+'url_cancel' => 'payment.error',
+```
+### REST API
+```php
+'enabled'    => false,
+'id'         => 'AYlzupNqmg7177ZI57MfI26mgkzN-n8QQewuicaHmi7OOEf5LNy5FIi7ooFIbwo-t9_LQR9NOqtLslF_',
+'secret'     => 'ECQLZ6zyH8b6JgG3hGN8Qg1u6ezDiT0HpfCK7MnKcQyyQoYtghnAndYJLu5p1g0UJmLMj7_IV1Qdbsv3',
+'mode'       => 'sandbox',
+'url_return' => 'payment.success',
+'url_cancel' => 'payment.error',
+'log'        => [
+    'enabled' => true,
+    'level'   => 'DEBUG', // 'FINE' for production
+],
 ```
 ## Proforma
 ### Config
 ```php
-        'enabled'     => false,
-        'url_waiting' => 'payment.waiting',
+'enabled'     => false,
+'url_waiting' => 'payment.waiting',
 ```
 # Implementation
-Each project needs to have implemented \Pckg\Payment\Adapter\Order|Product|Customer|Log (called ProjectOrder, ProjectProduct, ProjectCustomer and ProductLog) which provides proper mappers. Order object is stored in $order.
-Then we need to create payment service and assign order.
-```php
-$service = new \Pckg\Payment\Service\Payment();
-$service->setOrder(new ProjectOrder($order));
-```
+Each project needs to have implemented \Pckg\Payment\Adapter\Order|Product|Customer|Log|Environment (called ProjectOrder, ProjectProduct, ProjectCustomer and ProductLog) which provides proper mappers.
+For usage in Laravel project you can simply use Pckg\Payment\Service\LaravelPayment trait which creates payment service with Laravel environment for handling request, responses, url generation and redirects.
+For usage in other project simply implement Payment\Adapter\Environment.
 ## Routes
 ```php
-// show payment options
-'payment'         => route('PaymentController@payment', 'payment/{order}', 'GET'),
+// list payments
+'payment'          => route('PaymentController@payment', 'payment/{listing}', 'GET'),
 
-// validate paymill request
-'payment.paymill' => route('PaymentController@paymill', 'payment/paymill/validate', 'POST'),
+// apply promo code
+'payment.promo'    => route('PaymentController@promo', 'payment/{handler}/{listing}/promo', 'POST'),
 
-// start handler (post for paymill, get for paypal) - calls start() on handler
-'payment.start'   => route('PaymentController@start', 'payment/{handler}/{order}/start', 'POST|GET'),
+// validate payment request
+'payment.validate' => route('PaymentController@validate', 'payment/{handler}/{listing}/validate', 'POST'),
 
-// success handler - calls success() on handler
-'payment.success' => route('PaymentController@success', 'payment/{handler}/{order}/success', 'GET'),
+// start payment process
+'payment.start'    => route('PaymentController@start', 'payment/{handler}/{listing}/start', 'POST|GET'),
 
-// error handler - calls error() on handler
-'payment.error'   => route('PaymentController@error', 'payment/{handler}/{order}/error', 'GET'),
+// payment valid
+'payment.success'  => route('PaymentController@success', 'payment/{handler}/{listing}/success', 'GET'),
 
-// waiting for payment page (proforma)
-'payment.waiting' => route('PaymentController@waiting', 'payment/{handler}/{order}/waiting', 'GET'),
+// payment invalid
+'payment.error'    => route('PaymentController@error', 'payment/{handler}/{listing}/error', 'GET'),
+
+// payment not processed yet
+'payment.waiting'  => route('PaymentController@waiting', 'payment/{handler}/{listing}/waiting', 'GET'),
 ```
 ## Controller
+Example of full Laravel implementation
 ```php
-<?php 
+<?php namespace Net\Http;
 
-use Pckg\Payment\Request\Paymill;
-use Pckg\Payment\Service\Payment;
-use Project\Order\Order;
-use Project\Order\PaymentMethod;
+use Illuminate\Http\Request;
+use Net\Http\Payment\ZoneLog;
+use Net\Http\Payment\ZoneOrder;
+use Net\Http\Requests\PromoCodeRequest;
+use Pckg\Payment\Service\LaravelPayment;
+use Zone\Content\SelectItem;
+use Zone\Listing\Listing;
+use Zone\Listing\PaymentMethod;
+use Zone\Listing\PromoCode;
 
-class PaymentController
+class PaymentController extends BaseController
 {
+
+    use LaravelPayment;
 
     protected $paymentService;
 
     public function __construct()
     {
-        $this->paymentService = new Payment();
+        $this->paymentService = $this->createPaymentService();
     }
 
-    protected function preparePaymentService($handler, Order $order)
+    private function preparePaymentService($handler, Listing $listing)
     {
-        $this->paymentService->setOrder(new ProjectOrder($order));
-        $this->paymentService->{'use' . ucfirst($handler) . 'Handler'}();
-        $this->paymentService->getHandler()->setLogger(new ProjectLog($order));
+        $listing->abortIfNotMine();
+
+        $this->paymentService->prepare(new ZoneOrder($listing), $handler, new ZoneLog($listing));
     }
 
-    public function getPayment(Order $order)
+    public function getPayment(Listing $listing)
     {
-        $this->paymentService->setOrder(new ProjectOrder($order));
+        $listing->abortIfNotMine();
+
+        $this->paymentService->setOrder(new ZoneOrder($listing));
+
+        $this->vendorAsset('schtr4jh/payment/src/Pckg/Payment/public/payment.js', 'footer');
 
         return view('payment.index', [
-            'order'          => $order,
+            'listing'        => $listing,
             'paymentMethods' => PaymentMethod::where('enabled', 1)->get(),
             'paymentService' => $this->paymentService,
+            'expYears'       => range(date('Y') + 0, date('Y') + 16),
+            'expMonths'      => SelectItem::cardExpirationMonths()->get(),
         ]);
     }
 
-    public function postStart($handler, Order $order)
+    public function postStart($handler, Listing $listing)
     {
-        $this->preparePaymentService($handler, $order);
+        $this->preparePaymentService($handler, $listing);
         $success = $this->paymentService->getHandler()->start();
 
         return [
@@ -125,56 +156,75 @@ class PaymentController
         ];
     }
 
-    public function getStart($handler, Order $order)
+    public function getStart($handler, Listing $listing)
     {
-        return $this->getStatus($handler, $order, 'start');
+        return $this->getStatus($handler, $listing, 'start');
     }
 
-    public function getSuccess($handler, Order $order)
+    public function getSuccess($handler, Listing $listing)
     {
-        return $this->getStatus($handler, $order, 'success');
+        return $this->getStatus($handler, $listing, 'success');
     }
 
-    public function getError($handler, Order $order)
+    public function getError($handler, Listing $listing)
     {
-        return $this->getStatus($handler, $order, 'error');
+        return $this->getStatus($handler, $listing, 'error');
     }
 
-    public function getWaiting($handler, Order $order)
+    public function getWaiting($handler, Listing $listing)
     {
-        return $this->getStatus($handler, $order, 'waiting');
+        return $this->getStatus($handler, $listing, 'waiting');
     }
 
-    protected function getStatus($handler, Order $order, $action)
+    public function postValidate($handler, Listing $listing, Request $request)
     {
-        $this->preparePaymentService($handler, $order);
-        $this->paymentService->getHandler()->{$action}();
+        $this->preparePaymentService($handler, $listing);
 
-        return view('payment.' . $action, [
-            'order' => $order,
-        ]);
+        return $this->paymentService->getHandler()->validate($request);
     }
 
-    public function postPaymill(Paymill $request)
+    public function postPromo($handler, Listing $listing, PromoCodeRequest $request)
     {
-        // form request will take care of it =)
+        $this->preparePaymentService($handler, $listing);
+
+        $canApply = false;
+        $code = PromoCode::where('code', $request->promo_code)->first();
+        if ($code && (($code->discount_value && $code->discount_value < $this->paymentService->getTotal()) || $code->discount_percentage)) {
+            $listing->forceFill([
+                'promo_code_id' => $code->id,
+            ])->save();
+
+            $canApply = true;
+        } else {
+            $listing->forceFill([
+                'promo_code_id' => null,
+            ])->save();
+        }
+
         return [
-            'success' => true,
+            'success'           => true,
+            'promo_notice'      => $request->promo_code
+                ? ($canApply
+                    ? trans(
+                        'payment.label.promo_code_valid',
+                        ['discount' => $listing->promoCode->getDiscount($this->paymentService->getCurrency())]
+                    ) : trans('payment.label.promo_code_invalid')
+                ) : '',
+            'new_handler_price' => $this->paymentService->getHandler()->getTotalToPay(),
+            'new_button'        => trans('payment.paymill.btn.pay') . ' ' . $this->paymentService->getTotalToPayWithCurrency(),
         ];
     }
 
+    protected function getStatus($handler, Listing $listing, $action)
+    {
+        $this->preparePaymentService($handler, $listing);
+        $this->paymentService->getHandler()->{$action}();
+
+        return view('payment.' . $action, [
+            'listing' => $listing,
+        ]);
+    }
+
 }
-```
-## Handlers
-### Paymill
-```php
-$service->usePaymillHandler();
-$service->getHandler()->setLogger(new ProjectLog($order));
-$service->getHandler()->start(); // reads $_POST['token'] and executes transacion
-```
-### Paypal
-```php
-$service->usePaypalHandler();
-$service->getHandler()->setLogger(new ProjectLog($order));
-$service->getHandler()->start(); // redirects user to paypal
+
 ```
