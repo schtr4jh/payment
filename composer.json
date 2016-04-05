@@ -16,8 +16,8 @@
       "Pckg": "src\\"
     }
   },
-  "suggest": {
-    "paymill/paymill": "Allow Paymill payment method",
-    "paypal/rest-api-sdk-php": "Allow Paypall payment method"
+  "require": {
+    "paymill/paymill": "^4.1",
+    "paypal/rest-api-sdk-php": "^1.6"
   }
 }
